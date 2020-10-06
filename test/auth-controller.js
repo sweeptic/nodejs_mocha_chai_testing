@@ -41,11 +41,29 @@ describe('auth controller login process.', () => {
                email: 'test@test.com',
                password: 'tester',
                name: 'Test',
-               posts: []
+               posts: [],
+               _id: '5f79d8bf04810a29d879a1fe'
             })
             return user.save();
          })
          .then(() => {
+            const req = { userId: '5f79d8bf04810a29d879a1fe' };
+            const res = {
+               statusCode: 500,
+               userStatus: null,
+               status: function (code) {
+                  this.statusCode = code;
+                  return this;
+               },
+               json: function (data) {
+                  this.userStatus = data.status
+               }
+            }
+            AuthController.getUserStatus(req, res, () => { }).then(() => {
+               expect(res.statusCode).to.be.equal(200);
+               expect(res.userStatus).to.be.equal('I am new!!');
+               done();
+            })
 
          })
          .catch(err => console.log(err));
