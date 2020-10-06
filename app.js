@@ -7,15 +7,16 @@ const multer = require('multer');
 
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
+const uuidv4 = require('uuid').v4
 
 const app = express();
 
 const fileStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: function (req, file, cb) {
     cb(null, 'images');
   },
-  filename: (req, file, cb) => {
-    cb(null, new Date().toISOString() + '-' + file.originalname);
+  filename: function (req, file, cb) {
+    cb(null, uuidv4())
   }
 });
 
@@ -59,11 +60,9 @@ app.use((error, req, res, next) => {
   res.status(status).json({ message: message, data: data });
 });
 
-mongoose
-  .connect(
-    'mongodb+srv://maximilian:9u4biljMQc4jjqbe@cluster0-ntrwp.mongodb.net/messages?retryWrites=true'
-  )
-  .then(result => {
-    app.listen(8080);
-  })
+const MONGODB_URI = 'mongodb+srv://olive4:hardfloor@nodejs.zzg9t.mongodb.net/nodejs_database?retryWrites=true&w=majority'
+
+
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => app.listen(8080))
   .catch(err => console.log(err));
